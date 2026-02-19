@@ -6,17 +6,17 @@
 
 ## What is this?
 
-We ran a full [Jake Knapp Design Sprint](https://www.thesprintbook.com/) — Monday through Friday, 10 phases, 13 AI agents — to design an AI-powered care navigation tool for newly diagnosed cancer patients. The agents debate, synthesize, vote, sketch, prototype, and test with simulated users. The whole thing runs in ~27 minutes for about $4.37.
+We ran a full [Jake Knapp Design Sprint](https://www.thesprintbook.com/). Monday through Friday. 10 phases. 13 AI agents. The challenge: design an AI-powered care navigation tool for newly diagnosed cancer patients. The agents debate, synthesize, vote, sketch, prototype, and test with simulated users. ~27 minutes. $4.37.
 
 This repo documents the technical architecture. The code itself is not open-sourced, but we're sharing the methodology, orchestration patterns, and representative examples so others can understand (and critique) the approach.
 
 ## The short answer to "are the agents orchestrated?"
 
-**Both.** The agents are orchestrated through a structured 5-day workflow, but within that structure they alternate between independent work and collaborative synthesis — exactly like a real Sprint.
+**Both.** The agents are orchestrated through a structured 5-day workflow, but within that structure they alternate between independent work and collaborative synthesis. Exactly like a real Sprint.
 
 Some phases are **"together alone"**: agents work independently and cannot see each other's outputs. This prevents groupthink and forces genuine divergence. Other phases are **collaborative**: agents see everything that came before and build on each other's work. A Facilitator agent synthesizes team outputs at key junctures, and a Decider agent has authority to override consensus.
 
-The information architecture — who can see what, when — is the core design decision, not just "agents talking to each other."
+The information architecture (who can see what, when) is the core design decision. Not just "agents talking to each other."
 
 ---
 
@@ -61,7 +61,7 @@ Agents never talk to each other directly. The SprintEngine controls what each ag
 
 | Phase | What agents can see | What's hidden |
 |-------|-------------------|---------------|
-| Sprint Goal | Platform context, challenge definition | Nothing — everyone sees everything |
+| Sprint Goal | Platform context, challenge definition | Nothing. Everyone sees everything |
 | HMW Notes | Goal, customer journey map | **Other agents' HMW notes** |
 | Target Vote | All HMW notes revealed | Nothing |
 | Lightning Demos | Goal, map, target | Nothing |
@@ -84,7 +84,7 @@ Each agent has a detailed persona (background, decision framework, personality t
 
 | Agent | Role | Model | Sprint Authority |
 |-------|------|-------|-----------------|
-| Dr. Elaine Sato | Chief Patient Experience Officer | Sonnet | **The Decider** — 4 HMW dots (vs 2), 3 supervotes, final verdict |
+| Dr. Elaine Sato | Chief Patient Experience Officer | Sonnet | **The Decider.** 4 HMW dots (vs 2), 3 supervotes, final verdict |
 | Jordan Whitaker | Design Sprint Facilitator | Sonnet | Synthesizes team outputs, assembles storyboard & prototype |
 | Priya Anand | UX Lead / Product Designer | Sonnet | Solution sketches, prototype screens |
 | Marcus Webb | Clinical AI Architect | Sonnet | Technical feasibility, cost modeling |
@@ -95,7 +95,7 @@ Each agent has a detailed persona (background, decision framework, personality t
 
 ### 5 User Testers (Friday only)
 
-Each user is a newly diagnosed cancer patient with distinct barriers. They react to the prototype authentically — they are not polite.
+Each user is a newly diagnosed cancer patient with distinct barriers. They react to the prototype authentically. They are not polite.
 
 | User | Profile | What They Reveal |
 |------|---------|-----------------|
@@ -111,17 +111,17 @@ Each user is a newly diagnosed cancer patient with distinct barriers. They react
 
 We don't use the same model for every agent. The model assignment reflects the cognitive demand of each role:
 
-- **Sonnet** (Claude Sonnet 4.5): Agents doing complex reasoning — synthesis, design, financial modeling, technical architecture
-- **Haiku** (Claude Haiku 4.5): Agents providing grounded, practical, direct perspectives — clinical workflow, patient experience, ethical critique
-- **Opus** (Claude Opus 4.5): Used only for the Facilitator's synthesis calls (goal consolidation, storyboard assembly, prototype assembly) where output quality is critical
+- **Sonnet** (Claude Sonnet 4.5): Complex reasoning. Synthesis, design, financial modeling, technical architecture.
+- **Haiku** (Claude Haiku 4.5): Grounded, practical, direct perspectives. Clinical workflow, patient experience, ethical critique.
+- **Opus** (Claude Opus 4.5): Facilitator synthesis calls only (goal consolidation, storyboard assembly, prototype assembly). Used where output quality is critical.
 
-Haiku is ~4x cheaper per token than Sonnet, so running 9 of 13 agents on Haiku meaningfully reduces cost. But the Haiku agents aren't just cheaper — they're different. The Nurse Navigator's blunt, practical perspective is actually better served by a model that doesn't over-elaborate.
+Haiku is ~4x cheaper per token than Sonnet, so running 9 of 13 agents on Haiku meaningfully reduces cost. But the Haiku agents aren't just cheaper. They're different. The Nurse Navigator's blunt, practical perspective is actually better served by a model that doesn't over-elaborate.
 
 ---
 
 ## Prompt Caching Architecture
 
-With 13 agents making 5-6 calls each (~82 total API calls), prompt caching is critical for cost:
+13 agents making 5-6 calls each. ~82 total API calls. Prompt caching is critical for cost:
 
 ```
 System prompt structure (ordered for cache efficiency):
@@ -130,7 +130,7 @@ System prompt structure (ordered for cache efficiency):
 │    agents in all phases)                  │
 ├───────────────────────────────────────────┤
 │ 2. Shared context (identical for all      │ ← Cached once per phase,
-│    agents within a phase — includes       │    read by remaining agents
+│    agents within a phase, includes        │    read by remaining agents
 │    prior phase outputs)                   │
 ├───────────────────────────────────────────┤
 │ 3. Persona (unique per agent, ~500 tokens)│ ← Not cached (different each time)
@@ -139,7 +139,7 @@ System prompt structure (ordered for cache efficiency):
 
 We also use **staggered execution**: within each phase, we fire one Sonnet agent and one Haiku agent first (as "cache primers"), wait for them to complete, then run all remaining agents in parallel. The remaining agents hit warm caches on both the platform context and the shared context blocks.
 
-**Result:** 607K cache-read tokens vs 82K fresh input tokens — a ~7:1 cache hit ratio.
+**Result:** 607K cache-read tokens vs 82K fresh input tokens. ~7:1 cache hit ratio.
 
 ---
 
@@ -158,7 +158,7 @@ Agents don't just generate opinions from training data. Each agent has access to
 | Health Equity Evidence | Digital divide data, mitigation strategies | Advocate, Troublemaker |
 | Implementation Cost | Build vs. buy models, per-patient cost at scale | Decider, Engineer |
 
-Tools are called during evidence-gathering phases (Sprint Goal, HMW Notes, Lightning Demos). The tool outputs become part of the agent's reasoning context — they cite specific data points in their proposals.
+Tools are called during evidence-gathering phases (Sprint Goal, HMW Notes, Lightning Demos). The tool outputs become part of the agent's reasoning context. They cite specific data points in their proposals.
 
 ---
 
@@ -176,7 +176,7 @@ SPRINT_QUESTIONS:
 ...
 ```
 
-This isn't just prompt engineering hygiene — it's necessary for the Facilitator to synthesize 8 independent proposals into a single consolidated goal, or for the Friday debrief to map user reactions back to Monday's sprint questions.
+This isn't just prompt engineering hygiene. It's necessary for the Facilitator to synthesize 8 independent proposals into a single consolidated goal, or for the Friday debrief to map user reactions back to Monday's sprint questions.
 
 ---
 
@@ -186,11 +186,11 @@ Different phases use different temperatures to match the cognitive mode:
 
 | Cognitive Mode | Temperature | Phases |
 |---------------|-------------|--------|
-| Divergent / Creative | 0.8–0.9 | HMW Notes, Solution Sketches, User Testing |
-| Balanced | 0.5–0.6 | Storyboard, Prototype, Interview Script |
-| Analytical / Decisive | 0.3–0.4 | Target Vote, Supervote, Pattern Debrief, Verdict |
+| Divergent / Creative | 0.8-0.9 | HMW Notes, Solution Sketches, User Testing |
+| Balanced | 0.5-0.6 | Storyboard, Prototype, Interview Script |
+| Analytical / Decisive | 0.3-0.4 | Target Vote, Supervote, Pattern Debrief, Verdict |
 
-Solution Sketches (the most creative phase) run at 0.9. The Decider's Verdict runs at 0.3. This matters — running creative phases at low temperature produces bland, convergent outputs. Running voting phases at high temperature produces inconsistent reasoning.
+Solution Sketches (the most creative phase) run at 0.9. The Decider's Verdict runs at 0.3. This matters. Running creative phases at low temperature produces bland, convergent outputs. Running voting phases at high temperature produces inconsistent reasoning.
 
 ---
 
@@ -201,14 +201,14 @@ Solution Sketches (the most creative phase) run at 0.9. The Decider's Verdict ru
 **The Decider's Verdict: Flawed Success**
 
 The prototype validated three core hypotheses:
-1. **AI transparency builds trust** (4/5 users positive) — "I like that she says right away that it's not a person. Because if you don't tell me that, and I find out later, I'm going to feel tricked."
-2. **Proactive outreach within 2 hours closes the psychological void** (5/5 users validated) — Every user contrasted the prototype's immediate callback with their real experience of waiting 3+ days
-3. **Concrete timeline structure reduces cognitive load in acute crisis** (4/5 users positive) — "NOW we're talking. This is what I needed. Not 'how are you feeling' — just: here's what happens Saturday, here's what happens Monday."
+1. **AI transparency builds trust** (4/5 users positive). "I like that she says right away that it's not a person. Because if you don't tell me that, and I find out later, I'm going to feel tricked."
+2. **Proactive outreach within 2 hours closes the psychological void** (5/5 users validated). Every user contrasted the prototype's immediate callback with their real experience of waiting 3+ days.
+3. **Concrete timeline structure reduces cognitive load in acute crisis** (4/5 users positive). "NOW we're talking. This is what I needed. Not 'how are you feeling,' just: here's what happens Saturday, here's what happens Monday."
 
 But it also revealed critical failures:
-1. **Language accessibility is a blocker** — The prototype was built in Spanish to demonstrate equity, but accidentally excluded Mandarin speakers, demonstrating the exact two-tiered system the team was trying to avoid
-2. **Only solves the first 72 hours** — The 34-day gap has three distinct phases (acute crisis, workup, treatment decision). The prototype nailed phase 1 but was incomplete for phases 2 and 3
-3. **Generic emotional validation alienates some patients** — "If this thing called me and started talking about my feelings, I'd hang up."
+1. **Language accessibility is a blocker.** The prototype was built in Spanish to demonstrate equity, but accidentally excluded Mandarin speakers. Demonstrated the exact two-tiered system the team was trying to avoid.
+2. **Only solves the first 72 hours.** The 34-day gap has three distinct phases (acute crisis, workup, treatment decision). The prototype nailed phase 1 but was incomplete for phases 2 and 3.
+3. **Generic emotional validation alienates some patients.** "If this thing called me and started talking about my feelings, I'd hang up."
 
 ### Cost
 
@@ -227,15 +227,15 @@ The most expensive agent was the Facilitator ($2.62) because its synthesis calls
 
 ## Key Design Patterns
 
-### 1. "Together Alone" — Controlled Information Asymmetry
+### 1. "Together Alone": Controlled Information Asymmetry
 
 The most important pattern. In real Sprints, participants sketch alone so they aren't anchored by the loudest voice. We enforce this computationally: during HMW Notes and Solution Sketches, agents see shared context (goal, map, target) but **never** see other agents' outputs for that phase.
 
-This produces genuine divergence. Without it, agents converge on the first idea generated — a well-documented failure mode in multi-agent systems.
+This produces genuine divergence. Without it, agents converge on the first idea generated. A well-documented failure mode in multi-agent systems.
 
 ### 2. Decider Authority with Transparent Override
 
-The Decider has more voting power (4 dots vs 2, 3 supervotes vs straw poll) and can override team consensus — but must explain reasoning. This mirrors real organizational decision-making: the person accountable for the budget has final say, but the team's input is visible and shapes the decision.
+The Decider has more voting power (4 dots vs 2, 3 supervotes vs straw poll) and can override team consensus. But must explain reasoning. This mirrors real organizational decision-making: the person accountable for the budget has final say, but the team's input is visible and shapes the decision.
 
 ### 3. Anonymous Critique
 
@@ -243,7 +243,7 @@ Solution Sketches are presented without attribution during Wednesday's critique.
 
 ### 4. Sequential User Testing
 
-Friday's user tests run sequentially, not in parallel. Each user reacts to the prototype without seeing other users' reactions — just like real usability testing. The pattern debrief afterward is where the team synthesizes across all five tests.
+Friday's user tests run sequentially, not in parallel. Each user reacts to the prototype without seeing other users' reactions. Just like real usability testing. The pattern debrief afterward is where the team synthesizes across all five tests.
 
 ### 5. Role-Based Prototype Building
 
@@ -267,17 +267,17 @@ On Thursday, agents aren't all doing the same thing. They're assigned roles:
 **This is not:**
 - A replacement for real design sprints with real humans
 - A claim that AI agents "think" or "feel" or "have opinions"
-- A general-purpose multi-agent framework (this is purpose-built for Sprint methodology)
-- Production software (this is a research experiment)
+- A general-purpose multi-agent framework (purpose-built for Sprint methodology)
+- Production software (research experiment)
 
 ---
 
 ## Example Artifacts
 
 This repo includes:
-- [`examples/persona-team.yaml`](examples/persona-team.yaml) — Example team persona (the Decider)
-- [`examples/persona-user.yaml`](examples/persona-user.yaml) — Example user test persona (Maria Santos)
-- [`examples/sprint-excerpt.md`](examples/sprint-excerpt.md) — Excerpts from a full sprint report (Monday goal, Friday verdict)
+- [`examples/persona-team.yaml`](examples/persona-team.yaml): Example team persona (the Decider)
+- [`examples/persona-user.yaml`](examples/persona-user.yaml): Example user test persona (Maria Santos)
+- [`examples/sprint-excerpt.md`](examples/sprint-excerpt.md): Excerpts from a full sprint report (Monday goal, Friday verdict)
 
 ---
 
