@@ -111,11 +111,11 @@ Each user is a newly diagnosed cancer patient with distinct barriers. They react
 
 We don't use the same model for every agent. The model assignment reflects the cognitive demand of each role:
 
-- **Sonnet** (Claude 3.5 Sonnet): Agents doing complex reasoning — synthesis, design, financial modeling, technical architecture
-- **Haiku** (Claude 3.5 Haiku): Agents providing grounded, practical, direct perspectives — clinical workflow, patient experience, ethical critique
-- **Opus** (Claude 3 Opus): Used only for the Facilitator's synthesis calls (goal consolidation, storyboard assembly, prototype assembly) where output quality is critical
+- **Sonnet** (Claude Sonnet 4.5): Agents doing complex reasoning — synthesis, design, financial modeling, technical architecture
+- **Haiku** (Claude Haiku 4.5): Agents providing grounded, practical, direct perspectives — clinical workflow, patient experience, ethical critique
+- **Opus** (Claude Opus 4.5): Used only for the Facilitator's synthesis calls (goal consolidation, storyboard assembly, prototype assembly) where output quality is critical
 
-This reduces cost by ~60% compared to running all agents on Sonnet, while maintaining output quality where it matters. The Haiku agents aren't worse — they're different. The Nurse Navigator's blunt, practical perspective is actually better served by a model that doesn't over-elaborate.
+Haiku is ~4x cheaper per token than Sonnet, so running 9 of 13 agents on Haiku meaningfully reduces cost. But the Haiku agents aren't just cheaper — they're different. The Nurse Navigator's blunt, practical perspective is actually better served by a model that doesn't over-elaborate.
 
 ---
 
@@ -149,7 +149,7 @@ Agents don't just generate opinions from training data. Each agent has access to
 
 | Tool | What It Returns | Assigned To |
 |------|----------------|-------------|
-| Patient Journey Research | Barriers, emotional trajectory, digital adoption rates | Oncologist, Navigator, Advocate |
+| Patient Journey Research | Barriers, emotional trajectory, digital adoption rates | Designer, Oncologist, Navigator, Advocate |
 | Competitive Landscape | Existing products (Jasper Health, Belong.life, etc.) | Designer, Engineer |
 | AI Capability Assessment | What LLMs can/can't do reliably for clinical tasks | Engineer, Troublemaker |
 | Health Literacy Data | Readability guidelines, WCAG requirements | Designer |
@@ -284,13 +284,9 @@ This repo includes:
 ## Stack
 
 - **Language:** Python 3.11+, fully async (`asyncio`)
-- **LLM:** Anthropic Claude API (Sonnet, Haiku, Opus)
+- **LLM:** Anthropic Claude API (Sonnet 4.5, Haiku 4.5, Opus 4.5)
 - **Personas:** YAML configuration files (no persona logic in code)
 - **Output:** Markdown report + structured JSON export
 - **Concurrency:** `asyncio.gather()` within phases, sequential across phases
 
 ---
-
-## Questions / Contact
-
-This is a research project by [HealthMolt](https://healthmolt.com). If you have questions about the methodology or want to discuss the approach, reach out.
